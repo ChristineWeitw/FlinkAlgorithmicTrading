@@ -7,7 +7,7 @@ from alpaca.common import Sort
 from kafka import KafkaProducer
 
 from alpaca_config.keys import config
-# from utils import get_sentiment
+from utils import get_sentiment
 
 def get_producer(brokers: List[str]):
     producer = KafkaProducer(
@@ -37,11 +37,28 @@ def produce_history_news(
             symbol=symbol,
             start=start_date,
             end=end_date,
-            limit=5,
+            limit=35,
             sort=Sort.ASC,
             include_content=False,
         )
-        print(news)
+
+        for i, row in enumerate(news):
+            article = row._raw
+            should_proceed = any(s.lower() in row.headline.lower() for s in symbols)
+            if not should_proceed:
+                continue  # Skip if should_proceed == False, to continue to the next iteration
+
+            timestamp_ms = int(row.created_at.timestamp() * 1000)
+            timestamp = datetime.fromtimestamp(row.created_at.timestamp())
+
+            article['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            article['timestamp_ms'] = timestamp_ms
+            article['data_provider'] = 'alpaca'
+            article['sentiment'] = get_sentiment(article['headline'])
+            article.pop('symbols')
+            article['symbol'] = symbol
+
+            print(article)
 
 if __name__ == '__main__':
     produce_history_news(

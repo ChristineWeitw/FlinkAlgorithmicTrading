@@ -18,7 +18,7 @@ def get_producer(brokers: List[str]):
 
 
 def produce_history_news(
-        redpandas_client: KafkaProducer,
+        redpanda_client: KafkaProducer,
         start_date: str,
         end_date: str,
         symbols: List[str],
@@ -37,7 +37,7 @@ def produce_history_news(
             symbol=symbol,
             start=start_date,
             end=end_date,
-            limit=35,
+            limit=5000,
             sort=Sort.ASC,
             include_content=False,
         )
@@ -58,7 +58,20 @@ def produce_history_news(
             article.pop('symbols')
             article['symbol'] = symbol
 
-            print(article)
+            try:
+                future = redpanda_client.send(
+                    topic=topic,
+                    key=symbol,
+                    value=article,
+                    timestamp_ms=timestamp_ms
+                )
+
+                _ = future.get(timeout=10)
+                print(f'Sent {i+1} articles to {topic}')
+            except Exception as e:
+                print(f'Failed to send article: {article}')
+                print(e)
+
 
 if __name__ == '__main__':
     produce_history_news(

@@ -77,7 +77,7 @@ if __name__ == '__main__':
     produce_history_news(
         get_producer(config['redpanda_brokers']),
         topic='market-news',
-        start_date='2024-01-01',
-        end_date='2024-06-17',
+        start_date='2024-05-01',
+        end_date='2024-07-10',
         symbols=['NVDA','Nvidia']
     )

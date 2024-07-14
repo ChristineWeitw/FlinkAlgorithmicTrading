@@ -36,14 +36,7 @@ This project demonstrates a Algorithmic Trading with Flink using real-time marke
 ### Workflow
 
 1. **Data Ingestion**: Market News and Historical Trade data are ingested via APIs into the Kafka-Redpanda streaming platform.
+![alt text](image.png)
+
 2. **Streaming Processing**: Apache Flink and PyFlink process the incoming data stream to analyze and extract valuable insights.
 3. **Output and Notifications**: The processed data is outputted to the Live Market Trade API and important events are notified through Slack.
-
-## Getting Started
-
-To set up and run this system, follow the instructions below:
-
-1. **Clone the Repository**
-   ```sh
-   git clone https://github.com/yourusername/market-data-processing-system.git
-   cd market-data-processing-system
